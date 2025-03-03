@@ -1,0 +1,57 @@
+version: '3.1'
+
+services:
+  postgres_db:
+    image: postgres
+    restart: always
+    container_name: postgres_db
+    ports:
+      - 5899:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Test152
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata_db:/var/lib/postgresql/data
+    networks:
+      - my-network
+  flask_msi:
+    build:
+      context: ./
+      dockerfile: dockerfile
+    container_name: flask_msi
+    ports:
+      - "9128:9128"
+    volumes:
+      - ./:/var/www
+    restart: always
+    networks:
+      - my-network
+    depends_on:
+      - postgres_db
+  keycloak:
+    # build: .
+    image: quay.io/keycloak/keycloak:25.0.1
+    environment:
+      KC_LOG_LEVEL: debug
+      KC_DB: postgres
+      KC_DB_URL: 'jdbc:postgresql://postgres_db/postgres'
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: Test152
+      KC_DB_SCHEMA: keycloak
+      KC_HTTP_ENABLED: true
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: eX4mP13p455w0Rd
+      # KC_PROXY_HEADERS: xforwarded
+    # command: start --optimized
+    command: start-dev
+    ports:
+      - 8819:8080
+    networks:
+      - my-network
+    depends_on:
+      - postgres_db
+networks:
+  my-network:
+volumes:
+  pgdata_db:
