@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: Test152
       POSTGRES_DB: postgres
     volumes:
-      - pgdata_db:/var/lib/postgresql/data
+      - ./pgdata_db:/var/lib/postgresql/data
     networks:
       - my-network
   flask_msi:
@@ -53,5 +53,3 @@ services:
       - postgres_db
 networks:
   my-network:
-volumes:
-  pgdata_db:

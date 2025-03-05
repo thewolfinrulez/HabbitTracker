@@ -65,6 +65,9 @@ def login():
     response = requests.post(cfg.auth_url + "realms/TaskManager/protocol/openid-connect/token", data=data, headers={
         'Content-Type': 'application/x-www-form-urlencoded'
     })
+    print(response.json())
+    if 'error' in response.json():
+        return make_response(response.json(), 500)
     return make_response(response.json(), 200)
 
 
@@ -213,15 +216,11 @@ def complete_task():
     if user.count() == 0:
         return make_response("Invalid auth", 401)
     user = user.first()
-    group = TGroup.query.filter(TGroup.g_id == payload['group_id'])
-    if group.count() == 0:
-        return make_response("Group not found", 449)
-    group = group.first()
     task = TTask.query.filter(TTask.t_id == payload['task_id'])
     if task.count() == 0:
         return make_response("Task not found", 449)
     task = task.first()
-    group_user = TGroupUser.query.filter(TGroupUser.gu_group_id == group.g_id).filter(
+    group_user = TGroupUser.query.filter(TGroupUser.gu_group_id == task.t_group_id).filter(
         TGroupUser.gu_user_id == user.u_id)
     if group_user.count() == 0:
         return make_response("User is not in group", 449)

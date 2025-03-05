@@ -57,7 +57,7 @@ class TGroupUser(db.Model):
         user = TUser.query.filter(TUser.u_id == self.gu_user_id).first()
         obj = {
             "id": self.gu_id,
-            "name": user.u_name,
+            "username": user.u_username,
             "group_id": self.gu_group_id,
             "score": self.gu_score,
             "created_at": str(self.gu_created_at)
